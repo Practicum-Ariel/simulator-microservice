@@ -18,7 +18,7 @@ app.post('/createHistoryData', async (req, res) => {
         await gen300Service.createMultipleEvents(sensorType, time, scenario)
         res.send('success!')
     } catch (err) {
-        console.log(err.message); 
+        console.log(err.message);
         res.status(err.code || 400).send(err.message)
     }
 })
@@ -28,7 +28,7 @@ app.post('/createAllFakeData', async (req, res) => {
         await gen300Service.createAllFakeData()
         res.send('success to create All!')
     } catch (err) {
-        console.log(err.message); 
+        console.log(err.message);
         res.status(err.code || 400).send(err.message)
     }
 })
@@ -39,20 +39,21 @@ app.post('/live/start', async (req, res) => {
         let scenarioId = await gen300Service.createMultipleLiveEvents(sensorType, numOfEvents, scenario, interval)
         res.send(scenarioId)
     } catch (err) {
-        console.log(err.message); 
+        console.log(err.message);
         res.status(err.code || 400).send(err.message)
     }
 })
 
 app.post('/live/stop', async (req, res) => {
     try {
-        if(allIntervals[req.body.scenarioId]){
-            clearInterval(allIntervals[req.body.scenarioId])
-            res.send('stop interval')
+        let senc = allIntervals[req.body?.scenarioId]
+        if (senc) {
+            clearInterval(senc)
+            delete allIntervals[req.body.scenarioId]
         }
-        else res.send('interval not exist')
+        res.send(senc ? 'stop interval' : 'interval not exist')
     } catch (err) {
-        console.log(err.message); 
+        console.log(err.message);
         res.status(err.code || 400).send(err.message)
     }
 })

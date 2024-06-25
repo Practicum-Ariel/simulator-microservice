@@ -1,6 +1,6 @@
 const gen300Model = require('../DL/gen300.model')
 const sensorModel = require('../DL/sensor.model')
-let { allIntervals } = require('./DL/data_interval');
+let { allIntervals } = require('../DL/data_interval');
 
 const times = {
     'day': { numOfEvents: 48, interval: 1800000 },
@@ -97,9 +97,11 @@ async function createMultipleLiveEvents(sensorType, numOfEvents, scenario, inter
             await gen300Model.create(events.shift())
         else {
             clearInterval(intervalLive)
+            delete allIntervals[scenarioId]
         }
     }, (interval * 1000))
-
+    console.log("##### Start - Live #####");
+    console.log("scenarioId: ",scenarioId, "\nsensorType: ",sensorType);
     allIntervals[scenarioId]=intervalLive
     return scenarioId;
 }

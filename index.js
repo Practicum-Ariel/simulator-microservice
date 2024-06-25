@@ -50,7 +50,7 @@ app.post('/live/stop', async (req, res) => {
             clearInterval(allIntervals[req.body.scenarioId])
             res.send('stop interval')
         }
-        res.send('interval not exist')
+        else res.send('interval not exist')
     } catch (err) {
         console.log(err.message); 
         res.status(err.code || 400).send(err.message)

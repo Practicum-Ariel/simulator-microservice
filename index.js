@@ -15,8 +15,8 @@ db.connect()
 app.post('/createHistoryData', async (req, res) => {
     try {
         let { sensorType, time, scenario } = req.body
-        await gen300Service.createMultipleEvents(sensorType, time, scenario)
-        res.send('success!')
+        let scenarioId = await gen300Service.createMultipleEvents(sensorType, time, scenario)
+        res.send(scenarioId)
     } catch (err) {
         console.log(err.message);
         res.status(err.code || 400).send(err.message)
@@ -35,8 +35,8 @@ app.post('/createAllFakeData', async (req, res) => {
 
 app.post('/live/start', async (req, res) => {
     try {
-        let { sensorType, numOfEvents, scenario, interval } = req.body
-        let scenarioId = await gen300Service.createMultipleLiveEvents(sensorType, numOfEvents, scenario, interval)
+        let { temperature, sound, vibration, numOfEvents, interval } = req.body
+        let scenarioId = await gen300Service.sendInterval(temperature, sound, vibration, numOfEvents, interval)
         res.send(scenarioId)
     } catch (err) {
         console.log(err.message);

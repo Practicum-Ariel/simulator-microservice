@@ -74,8 +74,36 @@ async function createEvents(scenarioId, sensorType, minValue, maxValue, numOfEve
 }
 
 // ~~ live functions ~~
+async function sendInterval(temperature, sound, vibration, numOfEvents, interval) {
+    let tempArray = await createMultipleLiveEvents('temperature', numOfEvents, temperature, interval)
+    let soundArray = await createMultipleLiveEvents('sound', numOfEvents, sound, interval)
+    let vibArray = await createMultipleLiveEvents('vibration', numOfEvents, vibration, interval)
+    let events = []
+    let scenarioId = `live.${numOfEvents}.t-${temperature}.s-${sound}.v-${vibration}`
+
+    for (let i = 0; i < numOfEvents; i++) {
+        let x = Object.assign(tempArray[i], soundArray[i], vibArray[i])
+        x['scenarioId'] = scenarioId;
+        events.push(x)
+    }
+
+    let intervalLive = setInterval(async function () {
+        if (events.length != 0)
+            await gen300Model.create(events.shift())
+        else {
+            clearInterval(intervalLive)
+            delete allIntervals[scenarioId]
+        }
+    }, (interval * 1000))
+    console.log("##### Start - Live #####");
+    console.log("scenarioId: ", scenarioId, "\ntemperature: ", temperature, "\nsound: ", sound, "\nvibration: ", vibration);
+    allIntervals[scenarioId] = intervalLive
+    return scenarioId;
+
+}
+
 async function createMultipleLiveEvents(sensorType, numOfEvents, scenario, interval) {
-    const scenarioId = `live.${numOfEvents}.${sensorType}.${scenario}`
+    // const scenarioId = `live.${numOfEvents}.${sensorType}.${scenario}`
 
     let scenarioFromDB = await sensorModel.findOne({ sensorType })
     let minValue = scenarioFromDB[scenario + 'AnomalyMin']
@@ -90,28 +118,16 @@ async function createMultipleLiveEvents(sensorType, numOfEvents, scenario, inter
 
     const events = []
     for (let i = 0; i < 5; i++) {
-        events.push(...createLiveEvents(scenarioId, sensorType, rangesPerScenario[scenario][i][0], rangesPerScenario[scenario][i][1], numOfEvents * percentagesOfTime[scenario][i], interval))
+        events.push(...createLiveEvents(sensorType, rangesPerScenario[scenario][i][0], rangesPerScenario[scenario][i][1], numOfEvents * percentagesOfTime[scenario][i], interval))
     }
-    let intervalLive = setInterval(async function () {
-        if (events.length != 0)
-            await gen300Model.create(events.shift())
-        else {
-            clearInterval(intervalLive)
-            delete allIntervals[scenarioId]
-        }
-    }, (interval * 1000))
-    console.log("##### Start - Live #####");
-    console.log("scenarioId: ",scenarioId, "\nsensorType: ",sensorType);
-    allIntervals[scenarioId]=intervalLive
-    return scenarioId;
+    return events;
 }
 
-function createLiveEvents(scenarioId, sensorType, minValue, maxValue, numOfEvents) {
+function createLiveEvents(sensorType, minValue, maxValue, numOfEvents) {
     let events = []
     if (minValue < 0) minValue = 0
     for (let i = 0; i < numOfEvents; i++) {
         let generatorEvent = {
-            scenarioId,
             [sensors[sensorType][0]]: getRandomIntInclusive(minValue, maxValue),
             [sensors[sensorType][1]]: getRandomIntInclusive(minValue, maxValue),
             [sensors[sensorType][2]]: getRandomIntInclusive(minValue, maxValue),
@@ -123,7 +139,7 @@ function createLiveEvents(scenarioId, sensorType, minValue, maxValue, numOfEvent
     return events;
 }
 
-module.exports = { createAllFakeData, createMultipleEvents, createMultipleLiveEvents }
+module.exports = { createAllFakeData, createMultipleEvents, sendInterval }
 
 function getRandomIntInclusive(min, max) {
     const minCeiled = Math.ceil(min);

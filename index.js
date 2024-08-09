@@ -2,7 +2,8 @@ const express = require('express'),
     app = express(),
     PORT = 2700,
     cors = require('cors'),
-    gen300Service = require('./BL/gen300.service');
+    gen300Service = require('./BL/gen300.service'),
+    generatorService = require('./BL/generator.service');
 
 app.use(cors())
 app.use(express.json())
@@ -52,6 +53,17 @@ app.post('/live/stop', async (req, res) => {
             delete allIntervals[req.body.scenarioId]
         }
         res.send(senc ? 'stop interval' : 'interval not exist')
+    } catch (err) {
+        console.log(err.message);
+        res.status(err.code || 400).send(err.message)
+    }
+})
+
+
+app.post('/createGenerators', async (req, res) => {
+    try {
+        await generatorService.addGenerators()
+        res.send('success to create All!')
     } catch (err) {
         console.log(err.message);
         res.status(err.code || 400).send(err.message)

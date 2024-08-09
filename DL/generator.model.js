@@ -14,16 +14,19 @@ const generatorSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
-    sensorsIds: {
-        type: Array,
+    sensorsIds: [{ type: mongoose.Schema.Types.ObjectId, ref: 'sensor' }],
+    dataTableName: {
+        type: String,
+        required: true
     },
     status: {
         type: String,
-        enum: ['available', 'repair', 'off'],
-        default: 'available'
+        enum: ['proper', 'anomaly', 'error', 'disconnected'],
+        default: 'proper'
     },
-    insights: {
-        type: Array,
+    insights: [{ type: mongoose.Schema.Types.ObjectId, ref: 'insight' }],
+    lastUpdate: {
+        type: Date,
     },
     isActive: {
         type: Boolean,

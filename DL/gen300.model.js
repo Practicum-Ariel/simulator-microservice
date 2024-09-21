@@ -17,6 +17,6 @@ const gen300Schema = new mongoose.Schema({
 
 )
 
-const gen300Model = mongoose.model('gen300', gen300Schema)
+const gen300Model = mongoose.model('gen720', gen300Schema)
 
 module.exports = gen300Model

@@ -218,6 +218,7 @@ let generators = [{
 
 let gen300 = []
 let generator = []
+let alert = []
 
 const sensorModel = require('./sensor.model')
 
@@ -241,10 +242,15 @@ const go = async () => {
         // //    // // הפעלת פונקציה ליצירת נתונים
         // await gen300Model.create(gen300)
 
+        // // ייבוא המודל
+        // const generatorModel = require('./generator.model')
+        // //    // // הפעלת פונקציה ליצירת נתונים
+        // await generatorModel.create(generator)
+
         // ייבוא המודל
-        const generatorModel = require('./generator.model')
+        const alertModel = require('./alerts.model')
         //    // // הפעלת פונקציה ליצירת נתונים
-        await generatorModel.create(generator)
+        await alertModel.create(alert)
 
         console.log('@@@@ done @@@@')
     } catch (err) {

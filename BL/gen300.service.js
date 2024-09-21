@@ -21,7 +21,7 @@ const percentagesOfTime = {
     'severe': [0.2, 0.3, 0.2, 0.2, 0.1],
 }
 
-const initialDate = new Date('May 24 2024').getTime()
+const initialDate = new Date('Jul 21 2024').getTime()
 
 // create all fake data
 async function createAllFakeData() {
